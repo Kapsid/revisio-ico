@@ -1,0 +1,40 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Laravel Artisan CLI
+ *
+ * This script provides the command line interface for Laravel.
+ * Run commands with: php artisan <command>
+ *
+ * Common commands:
+ * - php artisan serve           : Start development server
+ * - php artisan migrate         : Run database migrations
+ * - php artisan db:seed         : Seed the database
+ * - php artisan tinker          : Interactive PHP shell
+ * - php artisan route:list      : List all routes
+ * - php artisan config:cache    : Cache configuration
+ */
+
+use Illuminate\Foundation\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+
+define('LARAVEL_START', microtime(true));
+
+// Register the Composer autoloader
+require __DIR__.'/vendor/autoload.php';
+
+// Bootstrap Laravel
+$app = require_once __DIR__.'/bootstrap/app.php';
+
+// Run the console kernel
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+
+$status = $kernel->handle(
+    $input = new ArgvInput,
+    new Symfony\Component\Console\Output\ConsoleOutput
+);
+
+$kernel->terminate($input, $status);
+
+exit($status);

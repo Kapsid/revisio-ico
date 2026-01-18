@@ -1,0 +1,61 @@
+services:
+  # NGINX Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: registry-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - registry-network
+
+  # PHP-FPM Application Server
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: registry-php
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - mariadb
+    networks:
+      - registry-network
+    environment:
+      - PHP_MEMORY_LIMIT=256M
+
+  # MariaDB Database
+  mariadb:
+    image: mariadb:11
+    container_name: registry-mariadb
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: registry
+      MYSQL_USER: registry
+      MYSQL_PASSWORD: secret
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - registry-network
+
+  # Redis for queue/cache (optional, not used now but useful for future scaling)
+  redis:
+    image: redis:alpine
+    container_name: registry-redis
+    ports:
+      - "6380:6379"
+    networks:
+      - registry-network
+
+networks:
+  registry-network:
+    driver: bridge
+
+volumes:
+  mariadb-data:
