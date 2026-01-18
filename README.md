@@ -7,44 +7,46 @@ A microservice for fetching company data from Czech (CZ), Slovak (SK), and Polis
 - **PHP 8.4** - Latest PHP version with readonly classes, enums, named arguments
 - **Laravel 12** - Modern Laravel with streamlined configuration
 - **MariaDB** - Primary database for caching registry data
-- **Docker** - PHP-FPM + NGINX + MariaDB + Redis
+- **Docker** - PHP-FPM + NGINX + MariaDB
 
 ## Quick Start
 
-### 1. Start Docker containers
-
-```bash
-docker-compose up -d --build
-```
-
-### 2. Install dependencies
-
-```bash
-docker-compose exec php composer install
-```
-
-### 3. Setup environment
+### 1. Setup environment
 
 ```bash
 cp .env.example .env
-docker-compose exec php php artisan key:generate
 ```
 
-### 4. Run migrations and seed
+### 2. Run full setup
 
 ```bash
-docker-compose exec php php artisan migrate
-docker-compose exec php php artisan db:seed
+make setup
 ```
 
-### 5. Access the API
+This builds containers, installs dependencies, generates app key, and runs migrations.
+
+### 3. Access the API
 
 The service is available at: `http://localhost:8080`
 
-## Test User
+## Available Make Commands
 
-- **Email:** test@example.com
-- **Password:** test20252026
+```bash
+make help      # Show all available commands
+make build     # Build Docker containers
+make up        # Start all containers
+make down      # Stop all containers
+make restart   # Restart all containers
+make logs      # Show container logs
+make shell     # Open PHP container shell
+make install   # Install composer dependencies
+make migrate   # Run database migrations
+make seed      # Seed the database
+make fresh     # Fresh install (migrate:fresh --seed)
+make test      # Run tests
+make key       # Generate application key
+make setup     # Full setup (build + up + install + key + migrate + seed)
+```
 
 ## API Endpoints
 
@@ -84,14 +86,6 @@ curl http://localhost:8080/api/company/info/cz/25596641
 }
 ```
 
-### Force Refresh
-
-```
-POST /api/company/refresh/{countryCode}/{companyId}
-```
-
-Bypasses cache and fetches fresh data from the registry.
-
 ### Health Check
 
 ```
@@ -102,9 +96,7 @@ GET /api/health
 
 - Data is cached in MariaDB
 - Cache TTL: 24 hours (configurable via `REGISTRY_CACHE_TTL`)
-- Data is **versioned**, not overwritten
-- Old versions are preserved for audit/history
-- `is_current` flag marks the latest version
+- One record per company
 
 ## Configuration
 

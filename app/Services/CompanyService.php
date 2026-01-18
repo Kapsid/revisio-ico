@@ -42,19 +42,4 @@ final readonly class CompanyService
 
         return $companyData;
     }
-
-    public function refreshCompanyInfo(string $countryCode, string $companyId): CompanyDto
-    {
-        $country = CountryCode::tryFromString($countryCode);
-
-        if ($country === null) {
-            throw new InvalidCountryCodeException($countryCode);
-        }
-
-        $provider = $this->providerFactory->make($country);
-        $companyData = $provider->fetchCompany($companyId);
-        $this->repository->store($companyData);
-
-        return $companyData;
-    }
 }

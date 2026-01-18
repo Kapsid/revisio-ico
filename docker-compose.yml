@@ -44,15 +44,6 @@ services:
     networks:
       - registry-network
 
-  # Redis for queue/cache (optional, not used now but useful for future scaling)
-  redis:
-    image: redis:alpine
-    container_name: registry-redis
-    ports:
-      - "6380:6379"
-    networks:
-      - registry-network
-
 networks:
   registry-network:
     driver: bridge

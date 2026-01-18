@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Repositories\CompanyRepository;
 use App\Repositories\Contracts\CompanyRepositoryInterface;
-use App\Repositories\EloquentCompanyRepository;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -32,11 +32,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Bind repository interface to Eloquent implementation
+        // Bind repository interface to implementation
         // This enables dependency injection throughout the application
         $this->app->bind(
             CompanyRepositoryInterface::class,
-            EloquentCompanyRepository::class
+            CompanyRepository::class
         );
 
         // The RegistryProviderFactory doesn't need binding

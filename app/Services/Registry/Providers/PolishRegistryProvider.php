@@ -18,6 +18,7 @@ use GusApi\SearchReport;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
+// TODO: For commercial usage, register at https://api.stat.gov.pl/Home/RegonApi
 final class PolishRegistryProvider implements RegistryProviderInterface
 {
     private GusApi $gusApi;
@@ -25,8 +26,8 @@ final class PolishRegistryProvider implements RegistryProviderInterface
 
     public function __construct()
     {
-        $this->apiKey = env('PL_REGISTRY_API_KEY', '');
-        $environment = env('PL_REGISTRY_ENVIRONMENT', 'dev');
+        $this->apiKey = config('registry.pl.api_key', '');
+        $environment = config('registry.pl.environment', 'dev');
         $this->gusApi = new GusApi($this->apiKey, $environment);
     }
 
@@ -54,7 +55,7 @@ final class PolishRegistryProvider implements RegistryProviderInterface
 
             return $this->mapToDto($reports[0], $companyId);
 
-        } catch (NotFoundException $e) {
+        } catch (NotFoundException|\InvalidArgumentException $e) {
             throw new CompanyNotFoundException($companyId, CountryCode::PL);
         } catch (InvalidUserKeyException $e) {
             Log::error('Polish GUS API key invalid', ['error' => $e->getMessage()]);
@@ -91,11 +92,11 @@ final class PolishRegistryProvider implements RegistryProviderInterface
 
     private function mapToDto(SearchReport $report, string $companyId): CompanyDto
     {
-        $nip = $report->getNip();
+        $nip = $report->getNip() ?: null;
 
         return new CompanyDto(
             name: $report->getName(),
-            id: $report->getRegon(),
+            id: $companyId,
             countryCode: CountryCode::PL,
             vatId: $nip ? 'PL' . $nip : null,
             vatPayer: $nip !== null,

@@ -21,11 +21,4 @@ final class CompanyController extends Controller
 
         return CompanyResource::make($company)->response()->setStatusCode(200);
     }
-
-    public function refresh(string $countryCode, string $companyId): JsonResponse
-    {
-        $company = $this->companyService->refreshCompanyInfo($countryCode, $companyId);
-
-        return CompanyResource::make($company)->response()->setStatusCode(200);
-    }
 }

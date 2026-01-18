@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
+use App\Enums\CompanyInfoKeys;
+
 readonly class AddressDto
 {
     public function __construct(
@@ -17,43 +19,41 @@ readonly class AddressDto
     public static function fromArray(array $data): self
     {
         return new self(
-            street: $data['street'] ?? null,
-            houseNumber: $data['houseNumber'] ?? null,
-            orientationNumber: $data['orientationNumber'] ?? null,
-            zip: isset($data['zip']) ? (int) $data['zip'] : null,
-            city: $data['city'] ?? null,
+            street: $data[CompanyInfoKeys::ADDRESS_STREET->value] ?? null,
+            houseNumber: $data[CompanyInfoKeys::ADDRESS_HOUSE_NUMBER->value] ?? null,
+            orientationNumber: $data[CompanyInfoKeys::ADDRESS_ORIENTATION_NUMBER->value] ?? null,
+            zip: isset($data[CompanyInfoKeys::ADDRESS_ZIP->value]) ? (int) $data[CompanyInfoKeys::ADDRESS_ZIP->value] : null,
+            city: $data[CompanyInfoKeys::ADDRESS_CITY->value] ?? null,
         );
     }
 
     public function toArray(): array
     {
         return [
-            'street' => $this->street,
-            'houseNumber' => $this->houseNumber,
-            'orientationNumber' => $this->orientationNumber,
-            'zip' => $this->zip,
-            'city' => $this->city,
+            CompanyInfoKeys::ADDRESS_STREET->value => $this->street,
+            CompanyInfoKeys::ADDRESS_HOUSE_NUMBER->value => $this->houseNumber,
+            CompanyInfoKeys::ADDRESS_ORIENTATION_NUMBER->value => $this->orientationNumber,
+            CompanyInfoKeys::ADDRESS_ZIP->value => $this->zip,
+            CompanyInfoKeys::ADDRESS_CITY->value => $this->city,
         ];
     }
 
     public function getFullAddress(): string
     {
-        $parts = [];
-
+        $streetPart = null;
         if ($this->street) {
-            $streetPart = $this->street;
-            if ($this->houseNumber) {
-                $streetPart .= ' ' . $this->houseNumber;
-                if ($this->orientationNumber) {
-                    $streetPart .= '/' . $this->orientationNumber;
-                }
-            }
-            $parts[] = $streetPart;
+            $streetPart = trim(
+                $this->street
+                . ' ' . ($this->houseNumber ?? '')
+                . ($this->orientationNumber ? '/' . $this->orientationNumber : '')
+            );
         }
 
-        if ($this->zip || $this->city) {
-            $parts[] = trim(($this->zip ?? '') . ' ' . ($this->city ?? ''));
-        }
+        $cityPart = trim(($this->zip ?? '') . ' ' . ($this->city ?? ''));
+        $parts = array_filter(
+            [$streetPart, $cityPart],
+            static fn (?string $value): bool => $value !== null && $value !== ''
+        );
 
         return implode(', ', $parts);
     }

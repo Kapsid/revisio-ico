@@ -34,10 +34,6 @@ RUN docker-php-ext-configure intl \
 RUN apk add --no-cache libxml2-dev \
     && docker-php-ext-install soap
 
-# Install Redis extension
-RUN pecl install redis \
-    && docker-php-ext-enable redis
-
 # Copy PHP configuration
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 

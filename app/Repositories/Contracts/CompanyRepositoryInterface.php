@@ -14,7 +14,4 @@ interface CompanyRepositoryInterface
     public function hasFreshCache(string $companyId, CountryCode $countryCode, int $ttlHours = 24): bool;
 
     public function store(CompanyDto $company, ?array $rawResponse = null): void;
-
-    /** @return CompanyDto[] */
-    public function getHistory(string $companyId, CountryCode $countryCode): array;
 }

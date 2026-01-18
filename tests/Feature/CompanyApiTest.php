@@ -120,6 +120,58 @@ class CompanyApiTest extends TestCase
             ]);
     }
 
+    public function test_get_polish_company_info_returns_correct_format(): void
+    {
+        $mockCompany = new CompanyDto(
+            name: 'Test Company Sp. z o.o.',
+            id: '123456789',
+            countryCode: CountryCode::PL,
+            vatId: 'PL1234567890',
+            vatPayer: true,
+            address: new AddressDto(
+                street: 'Marszałkowska',
+                houseNumber: '100',
+                orientationNumber: '10',
+                zip: 1,
+                city: 'Warszawa',
+            ),
+        );
+
+        $mockProvider = Mockery::mock(RegistryProviderInterface::class);
+        $mockProvider->shouldReceive('getCountryCode')->andReturn(CountryCode::PL);
+        $mockProvider->shouldReceive('fetchCompany')
+            ->with('1234567890')
+            ->andReturn($mockCompany);
+
+        $mockFactory = Mockery::mock(RegistryProviderFactory::class);
+        $mockFactory->shouldReceive('make')
+            ->with(CountryCode::PL)
+            ->andReturn($mockProvider);
+
+        $this->app->instance(RegistryProviderFactory::class, $mockFactory);
+
+        $response = $this->getJson('/api/company/info/pl/1234567890');
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'OK',
+                'data' => [
+                    'name' => 'Test Company Sp. z o.o.',
+                    'id' => '123456789',
+                    'vatId' => 'PL1234567890',
+                    'vatPayer' => true,
+                    'countryCode' => 'pl',
+                    'address' => [
+                        'street' => 'Marszałkowska',
+                        'houseNumber' => '100',
+                        'orientationNumber' => '10',
+                        'zip' => 1,
+                        'city' => 'Warszawa',
+                    ],
+                ],
+            ]);
+    }
+
     public function test_invalid_country_code_returns_404(): void
     {
         $response = $this->getJson('/api/company/info/xx/12345678');

@@ -8,11 +8,6 @@ Route::prefix('company')->group(function () {
         ->name('company.info')
         ->where('countryCode', 'cz|sk|pl')
         ->where('companyId', '[0-9]+');
-
-    Route::post('refresh/{countryCode}/{companyId}', [CompanyController::class, 'refresh'])
-        ->name('company.refresh')
-        ->where('countryCode', 'cz|sk|pl')
-        ->where('companyId', '[0-9]+');
 });
 
 Route::get('health', function () {
