@@ -7,7 +7,7 @@ namespace Tests\Unit;
 use App\DTO\CompanyDto;
 use App\Enums\CountryCode;
 use App\Exceptions\InvalidCountryCodeException;
-use App\Services\Registry\Contracts\RegistryProviderInterface;
+use App\Services\Registry\Providers\RegistryProviderInterface;
 use App\Services\Registry\RegistryProviderFactory;
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;

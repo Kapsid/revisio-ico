@@ -6,7 +6,7 @@ namespace App\Services\Registry;
 
 use App\Enums\CountryCode;
 use App\Exceptions\InvalidCountryCodeException;
-use App\Services\Registry\Contracts\RegistryProviderInterface;
+use App\Services\Registry\Providers\RegistryProviderInterface;
 use Illuminate\Contracts\Container\Container;
 
 class RegistryProviderFactory

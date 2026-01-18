@@ -9,7 +9,7 @@ use App\DTO\CompanyDto;
 use App\Enums\CountryCode;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\RegistryException;
-use App\Services\Registry\Contracts\RegistryProviderInterface;
+use App\Services\Registry\Providers\RegistryProviderInterface;
 use h4kuna\Ares\Ares;
 use h4kuna\Ares\AresFactory;
 use h4kuna\Ares\Ares\Core\Data;

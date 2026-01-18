@@ -8,27 +8,18 @@ use App\DTO\AddressDto;
 use App\DTO\CompanyDto;
 use App\Enums\CountryCode;
 use App\Repositories\Contracts\CompanyRepositoryInterface;
-use App\Services\Registry\Contracts\RegistryProviderInterface;
+use App\Services\Registry\Providers\RegistryProviderInterface;
 use App\Services\Registry\RegistryProviderFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Tests\TestCase;
 
-/**
- * Company API Feature Tests
- *
- * Tests the full HTTP request/response cycle for the company API.
- */
 class CompanyApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * Test successful company info retrieval.
-     */
     public function test_get_company_info_returns_correct_format(): void
     {
-        // Arrange: Create mock provider and company data
         $mockCompany = new CompanyDto(
             name: 'Test Company s.r.o.',
             id: '12345678',
@@ -57,10 +48,8 @@ class CompanyApiTest extends TestCase
 
         $this->app->instance(RegistryProviderFactory::class, $mockFactory);
 
-        // Act
         $response = $this->getJson('/api/company/info/cz/12345678');
 
-        // Assert
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'OK',
@@ -81,20 +70,63 @@ class CompanyApiTest extends TestCase
             ]);
     }
 
-    /**
-     * Test invalid country code returns error.
-     */
-    public function test_invalid_country_code_returns_400(): void
+    public function test_get_slovak_company_info_returns_correct_format(): void
+    {
+        $mockCompany = new CompanyDto(
+            name: 'GymBeam s.r.o.',
+            id: '46440224',
+            countryCode: CountryCode::SK,
+            vatId: null,
+            vatPayer: null,
+            address: new AddressDto(
+                street: 'Rastislavova',
+                houseNumber: '93',
+                zip: 4001,
+                city: 'Košice - mestská časť Juh',
+            ),
+        );
+
+        $mockProvider = Mockery::mock(RegistryProviderInterface::class);
+        $mockProvider->shouldReceive('getCountryCode')->andReturn(CountryCode::SK);
+        $mockProvider->shouldReceive('fetchCompany')
+            ->with('46440224')
+            ->andReturn($mockCompany);
+
+        $mockFactory = Mockery::mock(RegistryProviderFactory::class);
+        $mockFactory->shouldReceive('make')
+            ->with(CountryCode::SK)
+            ->andReturn($mockProvider);
+
+        $this->app->instance(RegistryProviderFactory::class, $mockFactory);
+
+        $response = $this->getJson('/api/company/info/sk/46440224');
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'OK',
+                'data' => [
+                    'name' => 'GymBeam s.r.o.',
+                    'id' => '46440224',
+                    'vatId' => null,
+                    'vatPayer' => null,
+                    'countryCode' => 'sk',
+                    'address' => [
+                        'street' => 'Rastislavova',
+                        'houseNumber' => '93',
+                        'zip' => 4001,
+                        'city' => 'Košice - mestská časť Juh',
+                    ],
+                ],
+            ]);
+    }
+
+    public function test_invalid_country_code_returns_404(): void
     {
         $response = $this->getJson('/api/company/info/xx/12345678');
 
-        // Route constraint should catch this
         $response->assertStatus(404);
     }
 
-    /**
-     * Test health endpoint.
-     */
     public function test_health_endpoint_returns_ok(): void
     {
         $response = $this->getJson('/api/health');

@@ -13,6 +13,7 @@ RUN apk add --no-cache \
     libzip-dev \
     icu-dev \
     linux-headers \
+    tidyhtml-dev \
     $PHPIZE_DEPS
 
 # Install PHP extensions required by Laravel 12
@@ -26,7 +27,8 @@ RUN docker-php-ext-configure intl \
         bcmath \
         zip \
         intl \
-        opcache
+        opcache \
+        tidy
 
 # Install SOAP extension (needed for some registry APIs)
 RUN apk add --no-cache libxml2-dev \

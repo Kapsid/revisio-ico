@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Registry\Contracts;
+namespace App\Services\Registry\Providers;
 
 use App\DTO\CompanyDto;
 use App\Enums\CountryCode;

@@ -9,12 +9,6 @@ use App\DTO\CompanyDto;
 use App\Enums\CountryCode;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Unit tests for CompanyDto and AddressDto.
- *
- * Unit tests test individual classes in isolation,
- * without database or framework dependencies.
- */
 class CompanyDtoTest extends TestCase
 {
     public function test_company_dto_can_be_created(): void
@@ -105,13 +99,11 @@ class CompanyDtoTest extends TestCase
 
     public function test_country_code_validation(): void
     {
-        // Valid Czech IČO
         $this->assertTrue(CountryCode::CZ->validateCompanyId('12345678'));
-        $this->assertFalse(CountryCode::CZ->validateCompanyId('1234567')); // Too short
-        $this->assertFalse(CountryCode::CZ->validateCompanyId('123456789')); // Too long
+        $this->assertFalse(CountryCode::CZ->validateCompanyId('1234567'));
+        $this->assertFalse(CountryCode::CZ->validateCompanyId('123456789'));
 
-        // Valid Polish REGON
-        $this->assertTrue(CountryCode::PL->validateCompanyId('123456789')); // 9 digits
-        $this->assertTrue(CountryCode::PL->validateCompanyId('12345678901234')); // 14 digits
+        $this->assertTrue(CountryCode::PL->validateCompanyId('123456789'));
+        $this->assertTrue(CountryCode::PL->validateCompanyId('12345678901234'));
     }
 }
