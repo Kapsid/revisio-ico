@@ -107,7 +107,8 @@ Key settings in `.env`:
 REGISTRY_CACHE_TTL=24
 
 # Polish GUS API (required for PL registry)
-GUS_API_KEY=your_api_key
+# Public test key - safe for development
+GUS_API_KEY=abcde12345abcde12345
 GUS_API_ENV=dev  # or 'prod'
 ```
 
@@ -116,5 +117,5 @@ GUS_API_ENV=dev  # or 'prod'
 | Country | Library | Registry |
 |---------|---------|----------|
 | CZ | h4kuna/ares | ARES (Administrative Register of Economic Subjects) |
-| SK | Custom HTTP | RPO (Register právnických osôb) |
+| SK | lubosdz/parser-orsr | ORSR (Obchodný register Slovenskej republiky) |
 | PL | gusapi/gusapi | GUS/REGON (Central Statistical Office) |
